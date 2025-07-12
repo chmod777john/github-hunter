@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install google-cloud-bigquery requests pandas tqdm db-dtypes
+        pip install google-cloud-bigquery requests pandas tqdm db-dtypes python-dotenv
 
     - name: Authenticate to GCP
       id: 'auth'
