@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from google.cloud import bigquery
 from datetime import datetime, timedelta
 import requests
@@ -5,6 +6,8 @@ import pandas as pd
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+
+load_dotenv() # 加载 .env 文件中的环境变量
 
 # Construct a BigQuery client object.
 client = bigquery.Client(project='gen-lang-client-0208180925')
@@ -164,3 +167,9 @@ output_filepath = os.path.join(output_dir, output_filename)
 
 # 保存到 CSV 文件
 df_sorted.to_csv(output_filepath, index=False)
+
+# 将生成的 CSV 文件复制到 web/public/results/result.csv
+import shutil
+web_public_results_dir = "web/public/results"
+os.makedirs(web_public_results_dir, exist_ok=True)
+shutil.copy(output_filepath, os.path.join(web_public_results_dir, "result.csv"))
