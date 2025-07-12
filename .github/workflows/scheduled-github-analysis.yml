@@ -39,10 +39,15 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-    - name: Commit and push results
+    - name: Copy results to web public folder
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add result/
-        git commit -m "Add new analysis results for $(date +'%Y-%m-%d')" || echo "No changes to commit"
-        git push
+        mkdir -p web/public/results
+        cp result/*.csv web/public/results/
+
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v20 # 使用 Vercel Action
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }} # Vercel Token
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} # Vercel Organization ID
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Vercel Project ID
+        vercel-project-path: ./web # 指定 Vercel 项目路径
