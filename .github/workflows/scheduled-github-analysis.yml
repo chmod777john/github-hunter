@@ -44,6 +44,9 @@ jobs:
         mkdir -p web/public/results
         cp result/*.csv web/public/results/
 
+    - name: List results in web public folder
+      run: ls -l web/public/results
+
     - name: Deploy to Vercel
       uses: amondnet/vercel-action@v20 # 使用 Vercel Action
       with:
