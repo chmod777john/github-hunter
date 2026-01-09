@@ -6,11 +6,12 @@ import pandas as pd
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import time
 
 load_dotenv() # 加载 .env 文件中的环境变量
 
 # Construct a BigQuery client object.
-client = bigquery.Client(project='gen-lang-client-0208180925')
+client = bigquery.Client(project='gen-lang-client-0730994553')
 
 # 获取今天的日期和前一天的日期
 today = datetime.today()
@@ -125,18 +126,88 @@ def fetch_repo_details(repo_name):
 # 处理并行化请求
 def fetch_repo_details_parallel(df):
     results = []
-    
+
     # 使用 ThreadPoolExecutor 进行并行化
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(fetch_repo_details, row["repo_name"]): index for index, row in df.iterrows()}
-        
+
         # 显示进度条
         for future in tqdm(as_completed(futures), total=len(futures), desc="Fetching repo details"):
             index = futures[future]
             created_at, stargazer_count = future.result()
             df.at[index, "created_at"] = created_at
             df.at[index, "current_star_count"] = stargazer_count
-    
+
+    return df
+
+# AI 总结函数（使用 OpenRouter）
+def summarize_with_openrouter(repo_name, star_count, created_at, current_stars):
+    """
+    使用 OpenRouter API 生成项目总结
+    """
+    from openai import OpenAI
+
+    api_key = os.environ.get("OPENROUTER_API_KEY", "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")
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key,
+    )
+
+    prompt = f"""请分析以下 GitHub 项目，用简洁的中文总结（100字以内）：
+
+项目名称：{repo_name}
+最近新增星标：{star_count}
+当前总星标：{current_stars}
+创建时间：{created_at}
+
+请回答：
+1. 这个项目是做什么的？（推测）
+2. 为什么值得关注？
+
+输出格式：直接输出总结内容，不要标题。"""
+
+    try:
+        response = client.chat.completions.create(
+            model="xiaomi/mimo-v2-flash:free",
+            messages=[
+                {"role": "system", "content": "你是一个技术分析师，擅长分析 GitHub 项目。请用简洁的中文回答。"},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"OpenRouter API exception for {repo_name}: {str(e)}")
+        return None
+
+# 批量生成总结（为前 N 个项目生成）
+def generate_summaries(df, top_n=50):
+    """
+    为前 top_n 个项目生成 AI 总结（并发）
+    """
+    df["ai_summary"] = None
+
+    def process_single_repo(index):
+        row = df.iloc[index]
+        repo_name = row["repo_name"]
+        star_count = row["star_count"]
+        created_at = row["created_at"]
+        current_stars = row["current_star_count"]
+
+        # 跳过无效数据
+        if pd.isna(created_at) or current_stars is None:
+            return index, None
+
+        summary = summarize_with_openrouter(repo_name, star_count, created_at, current_stars)
+        return index, summary
+
+    # 使用 ThreadPoolExecutor 并发处理
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(process_single_repo, i): i for i in range(min(top_n, len(df)))}
+
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Generating AI summaries"):
+            index, summary = future.result()
+            df.at[df.index[index], "ai_summary"] = summary
+
     return df
 
 # 假设你已经得到了如下的 DataFrame
@@ -148,6 +219,9 @@ df["current_star_count"] = None
 
 # 执行并行化的获取仓库信息
 df = fetch_repo_details_parallel(df)
+
+# 生成 AI 总结（为前 50 个项目）
+df = generate_summaries(df, top_n=50)
 
 # 确保 created_at 是 datetime 类型
 df["created_at"] = pd.to_datetime(df["created_at"])
