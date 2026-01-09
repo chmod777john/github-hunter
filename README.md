@@ -35,11 +35,18 @@
 | `lmnr-ai/lmnr` | LMNR AI | 快速增长 |
 | `PolymathicAI/the_well` | PolymathicAI | 潜力巨大 |
 
-<div align="center">
-  <img width="30%" src="https://github.com/user-attachments/assets/dc744691-1bb8-4898-afcd-ce6242b5599e" />
-  <img width="30%" src="https://github.com/user-attachments/assets/368cf649-fd9f-48ae-8171-e8c31a75b878" />
-  <img width="30%" src="https://github.com/user-attachments/assets/0b45fe07-3fc2-4d75-afcd-43eff11ef506" />
-</div>
+---
+
+## 🕵️ 特别侦查：揭开 GitHub “幽灵仓库” 幕后黑手
+
+**GitHub Hunter 不仅能寻找“明珠”，更能识别“诡计”。**
+
+在 2024.12.4 的一次日常数据筛查中，我们利用本工具发现了一起波及全球的 GitHub 恶意软件钓鱼事件。
+
+- **异常发现**：通过数据监控，我们捕捉到了大量“建仓 -> 取得高赞 -> 删库 -> 再次创建”的幽灵行为。
+- **侦查结果**：单枪匹马追踪 180 多个虚假账号，揭露了跨越 4 年、涉及 GitHub 大 V 的恶意软件分发链条。
+- **深度复盘**：[知乎文章 | GitHub 惊现“幽灵仓库”：我是如何通过大数据抓出幕后黑手的](https://zhuanlan.zhihu.com/p/11211528144)
+- **铁证存证**：[Arweave 区块链记录](https://viewblock.io/arweave/tx/Cppr-Bus0TxC6_zqD-sJitVz4Ne3sR0noJknsuyhZ4Q) (所有恶意仓库列表及证据已上链，不可篡改)。
 
 ---
 
