@@ -35,6 +35,12 @@
 | `lmnr-ai/lmnr` | LMNR AI | 快速增长 |
 | `PolymathicAI/the_well` | PolymathicAI | 潜力巨大 |
 
+<div align="center">
+  <img width="32%" src="https://github.com/user-attachments/assets/dc744691-1bb8-4898-afcd-ce6242b5599e" />
+  <img width="32%" src="https://github.com/user-attachments/assets/368cf649-fd9f-48ae-8171-e8c31a75b878" />
+  <img width="32%" src="https://github.com/user-attachments/assets/0b45fe07-3fc2-4d75-afcd-43eff11ef506" />
+</div>
+
 ---
 
 ## 🕵️ 特别侦查：揭开 GitHub “幽灵仓库” 幕后黑手
